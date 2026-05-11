@@ -1,0 +1,28 @@
+{
+  "name": "blockcraft-economy",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/subgraph"
+  ],
+  "scripts": {
+    "web:dev": "npm --workspace apps/web run dev",
+    "web:build": "npm --workspace apps/web run build",
+    "subgraph:codegen": "npm --workspace packages/subgraph run codegen",
+    "subgraph:build": "npm --workspace packages/subgraph run build",
+    "lint:sol": "solhint \"packages/contracts/src/**/*.sol\" \"packages/contracts/test/**/*.sol\"",
+    "lint:prettier": "prettier --check README.md docs .github apps/web packages/subgraph package.json package-lock.json --ignore-unknown",
+    "lint": "npm run lint:sol && npm run lint:prettier"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0",
+    "@openzeppelin/contracts-upgradeable": "^5.2.0"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.97.1",
+    "prettier": "^3.5.3",
+    "solc": "^0.8.30",
+    "solhint": "^5.0.5",
+    "typescript": "^5.8.3"
+  }
+}
