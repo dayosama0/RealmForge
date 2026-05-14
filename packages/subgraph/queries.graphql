@@ -1,0 +1,74 @@
+query getPlayerInventory($player: ID!) {
+  itemBalances(where: { player: $player }) {
+    itemId
+    amount
+  }
+}
+
+query getRecentCrafts {
+  craftEvents(first: 20, orderBy: timestamp, orderDirection: desc) {
+    player {
+      address
+    }
+    itemId
+    timestamp
+    txHash
+  }
+}
+
+query getRecentSwaps {
+  swapEvents(first: 20, orderBy: timestamp, orderDirection: desc) {
+    player {
+      address
+    }
+    tokenInId
+    tokenOutId
+    amountIn
+    amountOut
+  }
+}
+
+query getLootDropsByPlayer($player: ID!) {
+  lootDrops(
+    where: { player: $player }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    rewardItemId
+    rewardAmount
+    requestId
+    timestamp
+  }
+}
+
+query getActiveRentals {
+  rentalPositions(where: { status: "Available" }) {
+    id
+    lender {
+      address
+    }
+    itemId
+    price
+    status
+  }
+}
+
+query getProtocolActivity {
+  craftEvents(first: 10, orderBy: timestamp, orderDirection: desc) {
+    id
+    itemId
+    timestamp
+  }
+  swapEvents(first: 10, orderBy: timestamp, orderDirection: desc) {
+    id
+    amountIn
+    amountOut
+    timestamp
+  }
+  lootDrops(first: 10, orderBy: timestamp, orderDirection: desc) {
+    id
+    rewardItemId
+    rewardAmount
+    timestamp
+  }
+}

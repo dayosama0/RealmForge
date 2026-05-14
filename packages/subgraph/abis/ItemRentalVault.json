@@ -1,0 +1,30 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "positionId", "type": "uint256" },
+      { "indexed": true, "name": "lender", "type": "address" },
+      { "indexed": true, "name": "itemId", "type": "uint256" },
+      { "indexed": false, "name": "price", "type": "uint256" },
+      { "indexed": false, "name": "duration", "type": "uint256" }
+    ],
+    "name": "RentalListed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "positionId", "type": "uint256" },
+      { "indexed": true, "name": "renter", "type": "address" },
+      { "indexed": false, "name": "expiresAt", "type": "uint256" }
+    ],
+    "name": "ItemRented",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": true, "name": "positionId", "type": "uint256" }],
+    "name": "ItemReturned",
+    "type": "event"
+  }
+]

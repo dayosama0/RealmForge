@@ -1,0 +1,111 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: BlockCraftItems
+    network: localhost
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: BlockCraftItems
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Player
+        - ItemBalance
+      abis:
+        - name: BlockCraftItems
+          file: ./abis/BlockCraftItems.json
+      eventHandlers:
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+      file: ./src/items.ts
+  - kind: ethereum
+    name: CraftingManager
+    network: localhost
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: CraftingManager
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CraftEvent
+      abis:
+        - name: CraftingManager
+          file: ./abis/CraftingManager.json
+      eventHandlers:
+        - event: Crafted(indexed address,indexed uint256,uint256)
+          handler: handleCrafted
+      file: ./src/crafting.ts
+  - kind: ethereum
+    name: ResourcePair
+    network: localhost
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ResourcePair
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - SwapEvent
+      abis:
+        - name: ResourcePair
+          file: ./abis/ResourcePair.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed uint256,indexed uint256,uint256,uint256)
+          handler: handleSwap
+      file: ./src/amm.ts
+  - kind: ethereum
+    name: LootBox
+    network: localhost
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: LootBox
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - LootDrop
+      abis:
+        - name: LootBox
+          file: ./abis/LootBox.json
+      eventHandlers:
+        - event: LootFulfilled(indexed address,indexed uint256,uint256,uint256)
+          handler: handleLootFulfilled
+      file: ./src/loot.ts
+  - kind: ethereum
+    name: ItemRentalVault
+    network: localhost
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ItemRentalVault
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - RentalPosition
+      abis:
+        - name: ItemRentalVault
+          file: ./abis/ItemRentalVault.json
+      eventHandlers:
+        - event: RentalListed(indexed uint256,indexed address,indexed uint256,uint256,uint256)
+          handler: handleRentalListed
+        - event: ItemRented(indexed uint256,indexed address,uint256)
+          handler: handleItemRented
+        - event: ItemReturned(indexed uint256)
+          handler: handleItemReturned
+      file: ./src/rental.ts

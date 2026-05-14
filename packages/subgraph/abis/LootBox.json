@@ -1,0 +1,13 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "player", "type": "address" },
+      { "indexed": true, "name": "requestId", "type": "uint256" },
+      { "indexed": false, "name": "rewardItemId", "type": "uint256" },
+      { "indexed": false, "name": "rewardAmount", "type": "uint256" }
+    ],
+    "name": "LootFulfilled",
+    "type": "event"
+  }
+]

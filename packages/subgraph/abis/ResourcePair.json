@@ -1,0 +1,14 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "player", "type": "address" },
+      { "indexed": true, "name": "tokenInId", "type": "uint256" },
+      { "indexed": true, "name": "tokenOutId", "type": "uint256" },
+      { "indexed": false, "name": "amountIn", "type": "uint256" },
+      { "indexed": false, "name": "amountOut", "type": "uint256" }
+    ],
+    "name": "Swap",
+    "type": "event"
+  }
+]

@@ -1,0 +1,51 @@
+type Player @entity(immutable: false) {
+  id: ID!
+  address: Bytes!
+  crafts: [CraftEvent!]! @derivedFrom(field: "player")
+  swaps: [SwapEvent!]! @derivedFrom(field: "player")
+  lootDrops: [LootDrop!]! @derivedFrom(field: "player")
+}
+
+type ItemBalance @entity(immutable: false) {
+  id: ID!
+  player: Player!
+  itemId: BigInt!
+  amount: BigInt!
+}
+
+type CraftEvent @entity(immutable: true) {
+  id: ID!
+  player: Player!
+  itemId: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type SwapEvent @entity(immutable: true) {
+  id: ID!
+  player: Player!
+  tokenInId: BigInt!
+  tokenOutId: BigInt!
+  amountIn: BigInt!
+  amountOut: BigInt!
+  timestamp: BigInt!
+}
+
+type LootDrop @entity(immutable: true) {
+  id: ID!
+  player: Player!
+  rewardItemId: BigInt!
+  rewardAmount: BigInt!
+  requestId: BigInt!
+  timestamp: BigInt!
+}
+
+type RentalPosition @entity(immutable: false) {
+  id: ID!
+  lender: Player!
+  renter: Player
+  itemId: BigInt!
+  status: String!
+  price: BigInt!
+  expiresAt: BigInt
+}
