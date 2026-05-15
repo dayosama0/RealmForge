@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
-import { Backpack, Home } from "lucide-react";
+import { Backpack, Hammer, Home, Repeat2 } from "lucide-react";
 import { NetworkGuard } from "./components/NetworkGuard";
 import { TransactionToast } from "./components/TransactionToast";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { loadDeploymentAddresses } from "./config/addresses";
+import { useCrafting } from "./hooks/useCrafting";
 import { useItems } from "./hooks/useItems";
+import { useSwap } from "./hooks/useSwap";
 import { useWallet } from "./hooks/useWallet";
+import { CraftingPage } from "./pages/CraftingPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { InventoryPage } from "./pages/InventoryPage";
+import { SwapPage } from "./pages/SwapPage";
 
 const tabs = [
   ["dashboard", Home],
   ["inventory", Backpack],
+  ["crafting", Hammer],
+  ["swap", Repeat2],
 ] as const;
 
 export function App() {
   const [tab, setTab] = useState<(typeof tabs)[number][0]>("dashboard");
-  const [demoBalances] = useState<Record<string, string>>({
+  const [demoBalances, setDemoBalances] = useState<Record<string, string>>({
     "1": "64",
     "2": "48",
     "3": "24",
@@ -34,6 +40,8 @@ export function App() {
   const [deploymentStatus, setDeploymentStatus] = useState("loading");
   const wallet = useWallet();
   const items = useItems(wallet.publicClient, wallet.account);
+  const crafting = useCrafting(wallet.walletClient, wallet.account);
+  const swap = useSwap(wallet.walletClient, wallet.account);
 
   useEffect(() => {
     loadDeploymentAddresses().then((deployment) => {
@@ -45,9 +53,47 @@ export function App() {
     });
   }, []);
 
+  const activeTx =
+    crafting.tx.pending || crafting.tx.error || crafting.tx.hash
+      ? crafting.tx
+      : swap.tx;
+
   const visibleBalances = wallet.account
     ? { ...demoBalances, ...items.balances }
     : demoBalances;
+
+  function bumpBalance(id: string, delta: number) {
+    setDemoBalances((balances) => {
+      const current = Number(balances[id] ?? "0");
+      return { ...balances, [id]: Math.max(0, current + delta).toString() };
+    });
+  }
+
+  function demoCraft(itemId: bigint) {
+    if (itemId === 101n) {
+      bumpBalance("3", -3);
+      bumpBalance("1", -2);
+    }
+    if (itemId === 102n) {
+      bumpBalance("5", -3);
+      bumpBalance("1", -2);
+    }
+    if (itemId === 103n) {
+      bumpBalance("5", -2);
+      bumpBalance("1", -1);
+    }
+    bumpBalance(itemId.toString(), 1);
+  }
+
+  function demoSwap() {
+    bumpBalance("1", -10);
+    bumpBalance("2", 9);
+  }
+
+  function demoAddLiquidity() {
+    bumpBalance("1", -10);
+    bumpBalance("2", -10);
+  }
 
   return (
     <main>
@@ -82,14 +128,27 @@ export function App() {
           <span>
             {deploymentStatus === "local"
               ? "Frontend loaded contract addresses from public/deployments/31337.json."
-              : "Dashboard and inventory use seeded balances until contracts are deployed."}
+              : "Core inventory, crafting, and swap flows run in demo mode until contracts are deployed."}
           </span>
         </div>
         {tab === "dashboard" && (
           <DashboardPage balances={visibleBalances} delegate={() => {}} />
         )}
         {tab === "inventory" && <InventoryPage balances={visibleBalances} />}
-        <TransactionToast tx={{ pending: false }} />
+        {tab === "crafting" && (
+          <CraftingPage craft={wallet.account ? crafting.craft : demoCraft} />
+        )}
+        {tab === "swap" && (
+          <SwapPage
+            onSwap={wallet.account ? () => swap.swap(1n, 10n, 1n) : demoSwap}
+            onAddLiquidity={
+              wallet.account
+                ? () => swap.addLiquidity(100n, 100n)
+                : demoAddLiquidity
+            }
+          />
+        )}
+        <TransactionToast tx={activeTx} />
       </div>
     </main>
   );
