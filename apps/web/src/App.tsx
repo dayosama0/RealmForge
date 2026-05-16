@@ -1,16 +1,27 @@
 import { useEffect, useState } from "react";
-import { Backpack, Hammer, Home, Repeat2 } from "lucide-react";
+import {
+  Backpack,
+  Boxes,
+  Hammer,
+  Home,
+  Repeat2,
+  Vault,
+} from "lucide-react";
 import { NetworkGuard } from "./components/NetworkGuard";
 import { TransactionToast } from "./components/TransactionToast";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { loadDeploymentAddresses } from "./config/addresses";
 import { useCrafting } from "./hooks/useCrafting";
 import { useItems } from "./hooks/useItems";
+import { useLootBox } from "./hooks/useLootBox";
+import { useRentalVault } from "./hooks/useRentalVault";
 import { useSwap } from "./hooks/useSwap";
 import { useWallet } from "./hooks/useWallet";
 import { CraftingPage } from "./pages/CraftingPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { InventoryPage } from "./pages/InventoryPage";
+import { LootBoxPage } from "./pages/LootBoxPage";
+import { RentalVaultPage } from "./pages/RentalVaultPage";
 import { SwapPage } from "./pages/SwapPage";
 
 const tabs = [
@@ -18,6 +29,8 @@ const tabs = [
   ["inventory", Backpack],
   ["crafting", Hammer],
   ["swap", Repeat2],
+  ["loot", Boxes],
+  ["rental", Vault],
 ] as const;
 
 export function App() {
@@ -42,6 +55,8 @@ export function App() {
   const items = useItems(wallet.publicClient, wallet.account);
   const crafting = useCrafting(wallet.walletClient, wallet.account);
   const swap = useSwap(wallet.walletClient, wallet.account);
+  const loot = useLootBox(wallet.walletClient, wallet.account);
+  const rental = useRentalVault(wallet.walletClient, wallet.account);
 
   useEffect(() => {
     loadDeploymentAddresses().then((deployment) => {
@@ -56,7 +71,11 @@ export function App() {
   const activeTx =
     crafting.tx.pending || crafting.tx.error || crafting.tx.hash
       ? crafting.tx
-      : swap.tx;
+      : swap.tx.pending || swap.tx.error || swap.tx.hash
+        ? swap.tx
+        : loot.tx.pending || loot.tx.error || loot.tx.hash
+          ? loot.tx
+          : rental.tx;
 
   const visibleBalances = wallet.account
     ? { ...demoBalances, ...items.balances }
@@ -95,6 +114,14 @@ export function App() {
     bumpBalance("2", -10);
   }
 
+  function demoLoot() {
+    bumpBalance("104", 1);
+  }
+
+  function demoDepositRental() {
+    bumpBalance("105", -1);
+  }
+
   return (
     <main>
       <aside>
@@ -128,7 +155,7 @@ export function App() {
           <span>
             {deploymentStatus === "local"
               ? "Frontend loaded contract addresses from public/deployments/31337.json."
-              : "Core inventory, crafting, and swap flows run in demo mode until contracts are deployed."}
+              : "Core economy loops now cover crafting, swapping, loot rewards, and rentals in demo mode."}
           </span>
         </div>
         {tab === "dashboard" && (
@@ -146,6 +173,21 @@ export function App() {
                 ? () => swap.addLiquidity(100n, 100n)
                 : demoAddLiquidity
             }
+          />
+        )}
+        {tab === "loot" && (
+          <LootBoxPage
+            openLootBox={wallet.account ? loot.openLootBox : demoLoot}
+          />
+        )}
+        {tab === "rental" && (
+          <RentalVaultPage
+            depositItem={
+              wallet.account
+                ? () => rental.depositItem(105n, 1_000_000_000_000_000_000n)
+                : demoDepositRental
+            }
+            rentItem={wallet.account ? () => rental.rentItem(1n) : () => {}}
           />
         )}
         <TransactionToast tx={activeTx} />
