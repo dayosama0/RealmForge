@@ -58,7 +58,3 @@ http://127.0.0.1:5173/
    - Open `activity`.
    - Show the resulting event log.
    - Explain that the live version reads protocol activity through The Graph subgraph.
-
-## What To Say Clearly
-
-This is a demo-ready frontend connected to the repository architecture. The contracts, tests, subgraph, scripts, and docs are present in the repo. Final production-grade submission still needs Foundry test/coverage output, Slither output, L2 deployment, explorer verification links, and filled gas report.
